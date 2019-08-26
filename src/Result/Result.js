@@ -11,7 +11,6 @@ class Result extends Component {
             "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT9_CcegB2-N52ksSqHHpT7nbU_tb-mPiucAfgVwXKbBN3JAveW1Qg0wPI",
             "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQgFyqcax-cO4SRb_tG9TctLRiY4Vh3d783eZcyQ80ncdSEquo6bZ1EwA"
         ]
-        console.log('isLoadingDef: ', isLoadingDef)
 
         const wordCards = isLoadingDef ? (
             <div className="text-center">
