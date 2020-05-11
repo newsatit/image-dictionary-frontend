@@ -3,8 +3,8 @@ import React, {Component} from 'react';
 import { withRouter, Redirect } from 'react-router-dom'
 import axios from 'axios'
 
-import Result from './Result/Result'
-import Input from './Input/Input'
+import Result from './Result'
+import Input from './Input'
 
 class Home extends Component {
   constructor(props) {
