@@ -1,7 +1,8 @@
-import React, { useContext } from "react"
+import React, { useState, useContext } from "react"
 import { Formik, Form, Field, ErrorMessage } from "formik"
 import * as Yup from "yup"
 import axios from "axios"
+import { Redirect, useHistory, useLocation } from "react-router-dom"
 
 import { AuthContext } from "../../App"
 import "./Login.css"
@@ -11,13 +12,6 @@ const initialValues = {
   password: "",
 }
 
-const onSubmit = (values, { setSubmitting }) => {
-  setTimeout(() => {
-    console.log("values:", values)
-    setSubmitting(false)
-  }, 400)
-}
-
 const validationSchema = Yup.object({
   username: Yup.string().required("Username is required"),
   password: Yup.string().required("Password is required"),
@@ -25,6 +19,36 @@ const validationSchema = Yup.object({
 
 const Login = () => {
   const authContext = useContext(AuthContext)
+  const [loginError, setLoginError] = useState("")
+
+  const history = useHistory()
+  const location = useLocation()
+  const { from } = location.state || { from: { pathname: "/" } }
+
+  const onSubmit = (values, { setSubmitting }) => {
+    axios
+      .post("/api/api-token-auth/", {
+        username: values.username,
+        password: values.password,
+      })
+      .then((res) => {
+          authContext.dispatch({
+            type: "LOGIN",
+            payload: {
+              token: res.data.token,
+              userId: res.data.user_id,
+            },
+          })
+          history.replace(from)
+      })
+      .catch((error) => {
+        console.log(error)
+        if (error.response.status === 400)
+          setLoginError("username or password is not correct")
+        else
+          setLoginError("Login error. Please try again later!")
+      })
+  }
 
   return (
     <Formik
@@ -72,18 +96,15 @@ const Login = () => {
           <button className="btn btn-lg btn-primary btn-block" type="submit">
             Sign in
           </button>
+          {loginError && (
+            <div className="alert alert-danger" role="alert">
+              {loginError}
+            </div>
+          )}
         </Form>
       )}
     </Formik>
   )
 }
-
-// <button onClick={() => authContext.dispatch({
-//   type: 'LOGIN',
-//   payload: {
-//     token: 'dummy token',
-//     userId: 'dummy userId'
-//   }
-// })}>
 
 export default Login
