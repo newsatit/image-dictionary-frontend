@@ -5,6 +5,7 @@ import axios from 'axios'
 
 import Result from './Result'
 import Input from './Input'
+import AuthContext from '../../contexts/AuthContext'
 
 class Home extends Component {
   constructor(props) {
@@ -28,6 +29,8 @@ class Home extends Component {
   }
 
   fetchDefinitions = () => {
+    const { token, isAuthenticated } = this.context.state
+
     const query = new URLSearchParams(this.props.location.search)
     const word = query.get('q')
     if (word) {
@@ -50,6 +53,7 @@ class Home extends Component {
         showResult: true,
         searchInput: word
       }, () => {
+        // Fetch word definitions
         axios.get(defUrl)
           .then((res) => {
             let newDefinitions, newSuggestions
@@ -74,6 +78,7 @@ class Home extends Component {
           })
           .catch((error) => console.log(error)) 
         
+        // Fetch images
         axios.get(imgUrl)
           .then((res) => {
             let newImages
@@ -91,10 +96,17 @@ class Home extends Component {
           })
           .catch((error) => console.log(error)) 
 
-          axios.post('/api/histories/', {
-            query: word
-          })
-          .catch((error) => console.log(error))
+          
+          // Add history
+          const options = {
+            headers: {
+              Authorization: `Token ${token}`
+            }
+          }
+          if (isAuthenticated) {
+            axios.post('/api/histories/', { query: word }, options)
+              .catch((error) => console.log(error))
+          }
       })
     }
   }
@@ -134,5 +146,7 @@ class Home extends Component {
     );    
   }
 }
+
+Home.contextType = AuthContext
 
 export default Home;

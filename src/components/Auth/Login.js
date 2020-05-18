@@ -4,7 +4,7 @@ import * as Yup from "yup"
 import axios from "axios"
 import { Redirect, useHistory, useLocation } from "react-router-dom"
 
-import { AuthContext } from "../../App"
+import AuthContext from '../../contexts/AuthContext'
 import "./Login.css"
 
 const initialValues = {

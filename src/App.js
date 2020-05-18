@@ -13,6 +13,7 @@ import Home from './components/Search/Home'
 import History from './components/History/History'
 import Login from './components/Auth/Login'
 // import Register from './Auth/Register'
+import AuthContext from './contexts/AuthContext'
 
 const initialAuthState = {
   token: null,
@@ -30,8 +31,6 @@ const authReducer = (state, action) => {
       throw new Error('Auth reducer error')
   }
 }
-
-export const AuthContext = React.createContext()
 
 const App = () => {
   const [authState, authDispatch] = useReducer(authReducer, initialAuthState)

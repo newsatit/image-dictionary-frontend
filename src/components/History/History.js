@@ -1,51 +1,45 @@
-import React, {Component} from 'react';
-import axios from 'axios';
+import React, { useState, useEffect, useContext } from 'react'
+import axios from 'axios'
+import AuthContext from '../../contexts/AuthContext'
 
-class History extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            histories: [],
-            isLoading: false
-        };
-    }
+const History = () => {
+    const { state } = useContext(AuthContext)
 
-    componentDidMount() {
-        this.fetchHistories()
-    }
+    const [histories, setHistories] = useState([])
+    const [isLoading, setIsLoading] = useState(false)
 
-    fetchHistories = () => {
-        this.setState({
-            isLoading: true
-        }, () => {
-            axios.get('/api/histories/').then((res) => {
-                this.setState({
-                    histories: res.data,
-                    isLoading: false
-                })
-            })
-            .catch((error) => console.log(error))
+    useEffect(() => {
+        setIsLoading(true)
+        console.log(state)
+        axios.get(`/api/users/${state.userId}/`, {
+            headers: {
+                Authorization: `Token ${state.token}`
+            }
+        }).then((res) => {
+            setHistories(res.data.histories)
+            setIsLoading(false)
         })
-    }
+        .catch((error) => {
+            console.log(error)
+        })
+    }, [])
 
-    render() {
-        const { isLoading, histories } = this.state
-        return (
-             isLoading ? 
-                <div className="text-center">
-                    <div className="text-primary" role="status">
-                        <span>Loading Histories</span>
-                    </div>
-                    <div className="spinner-border text-primary" role="status">
-                        <span className="sr-only">Loading...</span>
-                    </div>
-                </div> :
-                <ul>
-                    { histories.map((history, index) => <li key={index}>{history.query}</li>) }
-                </ul>
+    console.log('histories', histories)
 
-        );
-    }
+    return (
+        isLoading ? 
+        <div className="text-center">
+            <div className="text-primary" role="status">
+                <span>Loading Histories</span>
+            </div>
+            <div className="spinner-border text-primary" role="status">
+                <span className="sr-only">Loading...</span>
+            </div>
+        </div> :
+        <ul>
+            { histories.map((history, index) => <li key={index}>{history}</li>) }
+        </ul>        
+    )
 }
 
-export default History;
+export default History
