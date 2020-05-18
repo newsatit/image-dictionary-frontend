@@ -1,11 +1,11 @@
-import React, {Component} from 'react';
+import React, { Component } from "react"
 
-import { withRouter, Redirect } from 'react-router-dom'
-import axios from 'axios'
+import { withRouter, Redirect } from "react-router-dom"
+import axios from "axios"
 
-import Result from './Result'
-import Input from './Input'
-import AuthContext from '../../contexts/AuthContext'
+import Result from "./Result"
+import Input from "./Input"
+import AuthContext from "../../contexts/AuthContext"
 
 class Home extends Component {
   constructor(props) {
@@ -18,7 +18,7 @@ class Home extends Component {
       showResult: false,
       isLoadingDef: false,
       isLoadingImg: false,
-      searchQuery: ""
+      searchQuery: "",
     }
     this.handleInputChange = this.handleInputChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
@@ -32,104 +32,129 @@ class Home extends Component {
     const { token, isAuthenticated } = this.context.state
 
     const query = new URLSearchParams(this.props.location.search)
-    const word = query.get('q')
+    const word = query.get("q")
     if (word) {
-      const apiKey = 'AIzaSyASaXpNoYuHyKdG2tzEeJGyiOi1phs_B2s'
-      const engineId = '006440095621558188841:oyunba398sc'
-  
-      const defBase = 'https://www.dictionaryapi.com/api/v3/references/collegiate/json'
-      const defUrl = defBase + '/' + word + '?key=8ff43ecf-f2dc-453e-8de3-c8a1b17c02b3'
-      const imgBase = 'https://www.googleapis.com/customsearch/v1'
-      const imgUrl = imgBase + '?' 
-        + 'q=' + word + '&'
-        + 'key=' + apiKey + '&'
-        + 'cx=' + engineId + '&'
-        + 'searchType=image&'
-        + 'imgSize=medium' 
-  
-      this.setState({
-        isLoadingDef: true,
-        isLoadingImg: true,
-        showResult: true,
-        searchInput: word
-      }, () => {
-        // Fetch word definitions
-        axios.get(defUrl)
-          .then((res) => {
-            let newDefinitions, newSuggestions
-            try {
-              newDefinitions = res.data.map((def) => ({
-                word: def.meta.id,
-                shortdef: def.shortdef,
-                fl: def.fl
-              }))
-              newSuggestions = []
-            } catch (error) {
-              console.log(error)
-              newDefinitions = []
-              newSuggestions = res.data
-            } finally {
-              this.setState({
-                definitions: newDefinitions,
-                suggestions: newSuggestions,
-                isLoadingDef: false
-              })
-            }
-          })
-          .catch((error) => console.log(error)) 
-        
-        // Fetch images
-        axios.get(imgUrl)
-          .then((res) => {
-            let newImages
-            try {
-              newImages = res.data.items.map((image) => image.image.thumbnailLink)
-            } catch (error) {
-              console.log(error)
-              newImages = []
-            } finally {
-              this.setState({
-                images: newImages,
-                isLoadingImg: false
-              })
-            }
-          })
-          .catch((error) => console.log(error)) 
+      const apiKey = "AIzaSyASaXpNoYuHyKdG2tzEeJGyiOi1phs_B2s"
+      const engineId = "006440095621558188841:oyunba398sc"
 
-          
+      const defBase =
+        "https://www.dictionaryapi.com/api/v3/references/collegiate/json"
+      const defUrl =
+        defBase + "/" + word + "?key=8ff43ecf-f2dc-453e-8de3-c8a1b17c02b3"
+      const imgBase = "https://www.googleapis.com/customsearch/v1"
+      const imgUrl =
+        imgBase +
+        "?" +
+        "q=" +
+        word +
+        "&" +
+        "key=" +
+        apiKey +
+        "&" +
+        "cx=" +
+        engineId +
+        "&" +
+        "searchType=image&" +
+        "imgSize=medium"
+
+      this.setState(
+        {
+          isLoadingDef: true,
+          isLoadingImg: true,
+          showResult: true,
+          searchInput: word,
+        },
+        () => {
+          // Fetch word definitions
+          axios
+            .get(defUrl)
+            .then((res) => {
+              let newDefinitions, newSuggestions
+              try {
+                newDefinitions = res.data.map((def) => ({
+                  word: def.meta.id,
+                  shortdef: def.shortdef,
+                  fl: def.fl,
+                }))
+                newSuggestions = []
+              } catch (error) {
+                console.log(error)
+                newDefinitions = []
+                newSuggestions = res.data
+              } finally {
+                this.setState({
+                  definitions: newDefinitions,
+                  suggestions: newSuggestions,
+                  isLoadingDef: false,
+                })
+              }
+            })
+            .catch((error) => console.log(error))
+
+          // Fetch images
+          axios
+            .get(imgUrl)
+            .then((res) => {
+              let newImages
+              try {
+                newImages = res.data.items.map(
+                  (image) => image.image.thumbnailLink
+                )
+              } catch (error) {
+                console.log(error)
+                newImages = []
+              } finally {
+                this.setState({
+                  images: newImages,
+                  isLoadingImg: false,
+                })
+              }
+            })
+            .catch((error) => console.log(error))
+
           // Add history
           const options = {
             headers: {
-              Authorization: `Token ${token}`
-            }
+              Authorization: `Token ${token}`,
+            },
           }
           if (isAuthenticated) {
-            axios.post('/api/histories/', { query: word }, options)
+            axios
+              .post("/api/histories/", { query: word }, options)
               .catch((error) => console.log(error))
           }
-      })
+        }
+      )
     }
   }
 
   handleInputChange(event) {
     this.setState({
-      searchInput: event.target.value
+      searchInput: event.target.value,
     })
   }
 
-  handleSubmit(event) {      
-    const word = this.state.searchInput.trim()  
+  handleSubmit(event) {
+    const word = this.state.searchInput.trim()
     this.setState({
-      searchQuery: word
+      searchQuery: word,
     })
-    const url = '/search?q=' + word
+    const url = "/search?q=" + word
     this.props.history.push(url)
-    event.preventDefault() 
+    event.preventDefault()
   }
 
   render() {
-    const {definitions, suggestions, images, isLoadingDef, isLoadingImg, showResult, searchQuery} = this.state
-    console.log('render!')
+    const {
+      definitions,
+      suggestions,
+      images,
+      isLoadingDef,
+      isLoadingImg,
+      showResult,
+      searchQuery,
+    } = this.state
+    console.log("render!")
     console.log(this.props.location.search)
     console.log(this.props.history)
     // if (searchQuery) {
@@ -140,13 +165,27 @@ class Home extends Component {
 
     return (
       <div className="container  my-sm-5">
-          <Input searchInput={this.state.searchInput} onChange={this.handleInputChange} onSubmit={this.handleSubmit}/>
-          { showResult ? <Result definitions={definitions} suggestions={suggestions} images={images} isLoadingDef={isLoadingDef} isLoadingImg={isLoadingImg}/> : <div></div> }
+        <Input
+          searchInput={this.state.searchInput}
+          onChange={this.handleInputChange}
+          onSubmit={this.handleSubmit}
+        />
+        {showResult ? (
+          <Result
+            definitions={definitions}
+            suggestions={suggestions}
+            images={images}
+            isLoadingDef={isLoadingDef}
+            isLoadingImg={isLoadingImg}
+          />
+        ) : (
+          <div></div>
+        )}
       </div>
-    );    
+    )
   }
 }
 
 Home.contextType = AuthContext
 
-export default Home;
+export default Home

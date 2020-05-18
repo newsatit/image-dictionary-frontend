@@ -4,7 +4,7 @@ import * as Yup from "yup"
 import axios from "axios"
 import { Redirect, useHistory, useLocation } from "react-router-dom"
 
-import AuthContext from '../../contexts/AuthContext'
+import AuthContext from "../../contexts/AuthContext"
 import "./Login.css"
 
 const initialValues = {
@@ -32,21 +32,20 @@ const Login = () => {
         password: values.password,
       })
       .then((res) => {
-          authContext.dispatch({
-            type: "LOGIN",
-            payload: {
-              token: res.data.token,
-              userId: res.data.user_id,
-            },
-          })
-          history.replace(from)
+        authContext.dispatch({
+          type: "LOGIN",
+          payload: {
+            token: res.data.token,
+            userId: res.data.user_id,
+          },
+        })
+        history.replace(from)
       })
       .catch((error) => {
         console.log(error)
         if (error.response.status === 400)
           setLoginError("username or password is not correct")
-        else
-          setLoginError("Login error. Please try again later!")
+        else setLoginError("Login error. Please try again later!")
       })
   }
 

@@ -1,34 +1,38 @@
-import React, { useReducer } from 'react'
+import React, { useReducer } from "react"
 import {
   BrowserRouter,
   Switch,
   Route,
   Link,
   withRouter,
-  Redirect
+  Redirect,
 } from "react-router-dom"
 
-import './App.css';
-import Home from './components/Search/Home'
-import History from './components/History/History'
-import Login from './components/Auth/Login'
+import "./App.css"
+import Home from "./components/Search/Home"
+import History from "./components/History/History"
+import Login from "./components/Auth/Login"
 // import Register from './Auth/Register'
-import AuthContext from './contexts/AuthContext'
+import AuthContext from "./contexts/AuthContext"
 
 const initialAuthState = {
   token: null,
   userId: null,
-  isAuthenticated: false
+  isAuthenticated: false,
 }
 
 const authReducer = (state, action) => {
   switch (action.type) {
-    case 'LOGIN':
-      return { token: action.payload.token, userId: action.payload.userId, isAuthenticated: true }
-    case 'LOGOUT':
-      return { token: null, userID: null, isAuthenticated: false}
+    case "LOGIN":
+      return {
+        token: action.payload.token,
+        userId: action.payload.userId,
+        isAuthenticated: true,
+      }
+    case "LOGOUT":
+      return { token: null, userID: null, isAuthenticated: false }
     default:
-      throw new Error('Auth reducer error')
+      throw new Error("Auth reducer error")
   }
 }
 
@@ -38,11 +42,16 @@ const App = () => {
   const { token, userId, isAuthenticated } = authState
 
   const PrivateRoute = ({ component: Component, ...rest }) => (
-    <Route {...rest} render={(props) => (
-      isAuthenticated === true
-        ? <Component {...props} />
-        : <Redirect to='/login' />
-    )} />
+    <Route
+      {...rest}
+      render={(props) =>
+        isAuthenticated === true ? (
+          <Component {...props} />
+        ) : (
+          <Redirect to="/login" />
+        )
+      }
+    />
   )
   // TODO: handle logout
   return (
@@ -55,7 +64,11 @@ const App = () => {
                 <Link to="/">Home</Link>
               </li>
               <li>
-                { isAuthenticated ? <Link to="/history">History</Link> : <Link to="/login">Login</Link> } 
+                {isAuthenticated ? (
+                  <Link to="/history">History</Link>
+                ) : (
+                  <Link to="/login">Login</Link>
+                )}
               </li>
             </ul>
           </nav>
@@ -69,9 +82,9 @@ const App = () => {
             <Route path="/" component={withRouter(Home)} />
           </Switch>
         </div>
-      </BrowserRouter>      
+      </BrowserRouter>
     </AuthContext.Provider>
-  )   
+  )
 }
 
-export default App;
+export default App
