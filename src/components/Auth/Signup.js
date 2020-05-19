@@ -1,51 +1,47 @@
-import React, { useState, useContext } from "react"
+import React, { useState } from "react"
 import { Formik, Form, Field, ErrorMessage } from "formik"
 import * as Yup from "yup"
 import axios from "axios"
-import { useHistory, useLocation } from "react-router-dom"
 
-import AuthContext from "../../contexts/AuthContext"
-import "./Login.css"
+import "./Signup.css"
 
 const initialValues = {
   username: "",
+  email: "",
   password: "",
+  confirmPassword: "",
 }
 
 const validationSchema = Yup.object({
   username: Yup.string().required("Username is required"),
+  email: Yup.string().email("Email is not valid"),
   password: Yup.string().required("Password is required"),
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref("password"), null], "Passwords must match")
+    .required("Confirm password is required"),
 })
 
-const Login = () => {
-  const authContext = useContext(AuthContext)
-  const [loginError, setLoginError] = useState("")
-
-  const history = useHistory()
-  const location = useLocation()
-  const { from } = location.state || { from: { pathname: "/" } }
+const Signup = () => {
+  const [feedback, setFeedback] = useState("")
+  const [success, setSuccess] = useState(false)
 
   const onSubmit = (values, { setSubmitting }) => {
     axios
-      .post("/api/api-token-auth/", {
+      .post("/api/users/", {
         username: values.username,
+        email: values.email,
         password: values.password,
       })
-      .then((res) => {
-        authContext.dispatch({
-          type: "LOGIN",
-          payload: {
-            token: res.data.token,
-            userId: res.data.user_id,
-          },
-        })
-        history.replace(from)
+      .then(() => {
+        setFeedback("Created account succesfully!")
+        setSuccess(true)
       })
       .catch((error) => {
         console.log(error)
         if (error.response.status === 400)
-          setLoginError("username or password is not correct")
-        else setLoginError("Login error. Please try again later!")
+          setFeedback("Cannot signup with current username or password")
+        else setFeedback("Signup error. Please try again later!")
+        setSuccess(false)
       })
   }
 
@@ -57,7 +53,7 @@ const Login = () => {
     >
       {({ errors, touched }) => (
         <Form className="form-signin">
-          <h1 className="h3 mb-3 font-weight-normal">Please log in</h1>
+          <h1 className="h3 mb-6 font-weight-normal">Sign up here!</h1>
           <label htmlFor="username" className="sr-only">
             Username
           </label>
@@ -73,6 +69,20 @@ const Login = () => {
           />
           <ErrorMessage
             name="username"
+            render={(msg) => <div className="invalid-feedback">{msg}</div>}
+          />
+          <Field
+            type="text"
+            id="email"
+            name="email"
+            className={
+              "form-control " +
+              (errors.email && touched.email ? "is-invalid" : "")
+            }
+            placeholder="Email"
+          />
+          <ErrorMessage
+            name="email"
             render={(msg) => <div className="invalid-feedback">{msg}</div>}
           />
           <label htmlFor="password" className="sr-only">
@@ -92,12 +102,31 @@ const Login = () => {
             name="password"
             render={(msg) => <div className="invalid-feedback">{msg}</div>}
           />
+          <Field
+            type="password"
+            id="confirmPassword"
+            name="confirmPassword"
+            className={
+              "form-control " +
+              (errors.confirmPassword && touched.confirmPassword
+                ? "is-invalid"
+                : "")
+            }
+            placeholder="Confirm Password"
+          />
+          <ErrorMessage
+            name="confirmPassword"
+            render={(msg) => <div className="invalid-feedback">{msg}</div>}
+          />
           <button className="btn btn-lg btn-primary btn-block" type="submit">
-            Log in
+            Sign up
           </button>
-          {loginError && (
-            <div className="alert alert-danger" role="alert">
-              {loginError}
+          {feedback && (
+            <div
+              className={"alert alert-" + (success ? "success" : "danger")}
+              role="alert"
+            >
+              {feedback}
             </div>
           )}
         </Form>
@@ -106,4 +135,4 @@ const Login = () => {
   )
 }
 
-export default Login
+export default Signup

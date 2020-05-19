@@ -12,6 +12,7 @@ import "./App.css"
 import Home from "./components/Search/Home"
 import History from "./components/History/History"
 import Login from "./components/Auth/Login"
+import Signup from "./components/Auth/Signup"
 // import Register from './Auth/Register'
 import AuthContext from "./contexts/AuthContext"
 
@@ -38,8 +39,7 @@ const authReducer = (state, action) => {
 
 const App = () => {
   const [authState, authDispatch] = useReducer(authReducer, initialAuthState)
-  //TODO: handhle expired token
-  const { token, userId, isAuthenticated } = authState
+  const { isAuthenticated } = authState
 
   const PrivateRoute = ({ component: Component, ...rest }) => (
     <Route
@@ -84,11 +84,18 @@ const App = () => {
                     </li>
                   </>
                 ) : (
-                  <li className="nav-item">
-                    <Link to="/login" className="nav-link">
-                      Login
-                    </Link>
-                  </li>
+                  <>
+                    <li className="nav-item">
+                      <Link to="/login" className="nav-link">
+                        Log in
+                      </Link>
+                    </li>
+                    <li className="nav-item">
+                      <Link to="/signup" className="nav-link">
+                        Sign up
+                      </Link>
+                    </li>
+                  </>
                 )}
               </ul>
             </div>
@@ -98,6 +105,7 @@ const App = () => {
           <Switch>
             <PrivateRoute path="/history" component={History} />
             <Route path="/login" component={Login} />
+            <Route path="/signup" component={Signup} />
             {/* <Route path="/register" component={Register} /> */}
             <Route path="/search" component={withRouter(Home)} />
             <Route path="/" component={withRouter(Home)} />
