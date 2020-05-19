@@ -53,24 +53,45 @@ const App = () => {
       }
     />
   )
-  // TODO: handle logout
+
   return (
     <AuthContext.Provider value={{ state: authState, dispatch: authDispatch }}>
       <BrowserRouter>
         <div>
-          <nav>
-            <ul>
-              <li>
-                <Link to="/">Home</Link>
-              </li>
-              <li>
+          <nav className="navbar navbar-expand navbar-dark bg-dark">
+            <div className="navbar-brand">Image Dictionary</div>
+            <div className="collapse navbar-collapse">
+              <ul className="navbar-nav mr-auto">
+                <li className="nav-item">
+                  <Link to="/" className="nav-link">
+                    Home
+                  </Link>
+                </li>
                 {isAuthenticated ? (
-                  <Link to="/history">History</Link>
+                  <>
+                    <li className="nav-item">
+                      <Link to="/history" className="nav-link">
+                        History
+                      </Link>
+                    </li>
+                    <li className="nav-item">
+                      <button
+                        onClick={() => authDispatch({ type: "LOGOUT" })}
+                        className="nav-link"
+                      >
+                        Logout
+                      </button>
+                    </li>
+                  </>
                 ) : (
-                  <Link to="/login">Login</Link>
+                  <li className="nav-item">
+                    <Link to="/login" className="nav-link">
+                      Login
+                    </Link>
+                  </li>
                 )}
-              </li>
-            </ul>
+              </ul>
+            </div>
           </nav>
           {/* A <Switch> looks through its children <Route> and
               renders the first one that matches the current URL. */}
