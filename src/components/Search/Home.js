@@ -1,6 +1,5 @@
 import React, { Component } from "react"
 
-import { withRouter, Redirect } from "react-router-dom"
 import axios from "axios"
 
 import Result from "./Result"
@@ -152,7 +151,6 @@ class Home extends Component {
       isLoadingDef,
       isLoadingImg,
       showResult,
-      searchQuery,
     } = this.state
     console.log("render!")
     console.log(this.props.location.search)

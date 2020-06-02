@@ -24,7 +24,7 @@ const History = () => {
       .catch((error) => {
         console.log(error)
       })
-  }, [])
+  }, [state])
 
   console.log("histories", histories)
 
