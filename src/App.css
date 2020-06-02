@@ -1,4 +1,4 @@
-.App {
+/* .App {
   text-align: center;
 }
 
@@ -30,4 +30,9 @@
   to {
     transform: rotate(360deg);
   }
+} */
+
+button.nav-link {
+  border: none;
+  background-color: inherit;
 }
